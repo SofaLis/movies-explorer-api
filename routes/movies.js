@@ -23,10 +23,11 @@ router.post('/', celebrate({
   }),
 }), createMovie);
 
-router.delete('/:movieId', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24).required(),
-  }),
-}), deleteMovie);
+router.delete('/:movieId', deleteMovie);
+// celebrate({
+// params: Joi.object().keys({
+// cardId: Joi.string().hex().length(24).required(),
+// }),
+// }),
 
 module.exports = router;
