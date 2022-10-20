@@ -8,6 +8,8 @@ const Unauthorized = require('../err/Unauthorized');
 const NotFound = require('../err/NotFound');
 const Conflict = require('../err/Conflict');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 module.exports.getUsersMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
@@ -67,16 +69,26 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
-        expiresIn: '7d',
-      });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secretKey', { expiresIn: '7d' });
       res.cookie('jwt', token, {
-        maxAge: 3600000,
+        maxAge: 3600000 * 24 * 7,
         httpOnly: true,
+        sameSite: 'none',
       });
       res.send({ token });
     })
     .catch(() => {
       next(new Unauthorized('Неверно введен пароль или почта'));
     });
+};
+
+module.exports.logoff = (req, res) => {
+  res.cookie('jwt', 'token', {
+    maxAge: 0,
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+  });
+  res.status(200)
+    .send({ message: 'вы покинули аккаунт' });
 };
