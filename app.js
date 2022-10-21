@@ -5,11 +5,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const { errors } = require('celebrate');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { errServer } = require('./middlewares/errServer');
 const { errNotFound } = require('./middlewares/errNotFound');
+const { limiter } = require('./middlewares/limiter');
 const routes = require('./routes');
 
 const { PORT = 3000 } = process.env;
@@ -19,6 +21,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(helmet());
+app.use(limiter);
 
 mongoose.connect('mongodb://localhost:27017/moviesdb', {
   useNewUrlParser: true,
