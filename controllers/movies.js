@@ -1,8 +1,8 @@
 const Movie = require('../models/movie');
 
-const BadRequest = require('../err/BadRequest');
-const NotFound = require('../err/NotFound');
-const Forbidden = require('../err/Forbidden');
+const BadRequest = require('../utils/err/BadRequest');
+const NotFound = require('../utils/err/NotFound');
+const Forbidden = require('../utils/err/Forbidden');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})

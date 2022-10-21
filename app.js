@@ -8,8 +8,9 @@ const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { errServer } = require('./middlewares/errServer');
+const { errNotFound } = require('./middlewares/errNotFound');
 const routes = require('./routes');
-const NotFound = require('./err/NotFound');
 
 const { PORT = 3000 } = process.env;
 
@@ -30,15 +31,9 @@ app.use(routes);
 app.use(errorLogger);
 app.use(errors());
 
-app.use('*', (req, res, next) => {
-  next(new NotFound('Простите, страница не найдена'));
-});
+app.use('*', errNotFound);
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка сервера' : message });
-  next();
-});
+app.use(errServer);
 
 // eslint-disable-next-line no-console
 console.log(process.env.JWT_SECRET);
