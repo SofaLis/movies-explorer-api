@@ -4,16 +4,11 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const {
-  celebrate, Joi, errors,
-} = require('celebrate');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
 
-const userRoutes = require('./routes/users');
-const movieRoutes = require('./routes/movies');
-const auth = require('./middlewares/auth');
-const { login, createUser, logoff } = require('./controllers/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const routes = require('./routes');
 const NotFound = require('./err/NotFound');
 
 const { PORT = 3000 } = process.env;
@@ -30,25 +25,7 @@ mongoose.connect('mongodb://localhost:27017/moviesdb', {
 
 app.use(requestLogger);
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  }),
-}), createUser);
-
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  }),
-}), login);
-
-app.post('/logoff', logoff);
-
-app.use('/users', auth, userRoutes);
-app.use('/movies', auth, movieRoutes);
+app.use(routes);
 
 app.use(errorLogger);
 app.use(errors());
