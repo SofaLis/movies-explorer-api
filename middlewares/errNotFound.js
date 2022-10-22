@@ -1,5 +1,6 @@
 const NotFound = require('../utils/err/NotFound');
+const { NF } = require('../utils/constants');
 
 module.exports.errNotFound = (req, res, next) => {
-  next(new NotFound('Простите, страница не найдена'));
+  next(new NotFound(NF));
 };

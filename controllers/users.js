@@ -8,13 +8,16 @@ const Unauthorized = require('../utils/err/Unauthorized');
 const NotFound = require('../utils/err/NotFound');
 const Conflict = require('../utils/err/Conflict');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { secretKey } = require('../utils/config');
+const {
+  NFUser, BR, Conf, UnautEnter,
+} = require('../utils/constants');
 
 module.exports.getUsersMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFound('Пользователь не найден');
+        throw new NotFound(NFUser);
       }
       res.send(user);
     })
@@ -29,12 +32,12 @@ module.exports.updateUser = (req, res, next) => {
       if (user) {
         res.status(200).send({ data: user });
       } else {
-        throw new NotFound('Пользователь не найден');
+        throw new NotFound(NFUser);
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequest('Некорректные данные'));
+        next(new BadRequest(BR));
       } else {
         next(err);
       }
@@ -54,11 +57,11 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequest('Некорректные данные'));
+        next(new BadRequest(BR));
         return;
       }
       if (err.name === 'MongoServerError') {
-        next(new Conflict('Пользователь с таким email уже существует'));
+        next(new Conflict(Conf));
         return;
       }
       next(err);
@@ -69,7 +72,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secretKey', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, secretKey, { expiresIn: '7d' });
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
@@ -78,7 +81,7 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch(() => {
-      next(new Unauthorized('Неверно введен пароль или почта'));
+      next(new Unauthorized(UnautEnter));
     });
 };
 

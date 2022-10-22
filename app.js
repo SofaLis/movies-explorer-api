@@ -12,7 +12,8 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { errServer } = require('./middlewares/errServer');
 const { errNotFound } = require('./middlewares/errNotFound');
 const { limiter } = require('./middlewares/limiter');
-const routes = require('./routes');
+const { mongoURL, mongoSetting } = require('./utils/config');
+const routes = require('./routes/index');
 
 const { PORT = 3000 } = process.env;
 
@@ -24,15 +25,14 @@ app.use(cookieParser());
 app.use(helmet());
 app.use(limiter);
 
-mongoose.connect('mongodb://localhost:27017/moviesdb', {
-  useNewUrlParser: true,
-});
+mongoose.connect(mongoURL, mongoSetting);
 
 app.use(requestLogger);
 
 app.use(routes);
 
 app.use(errorLogger);
+
 app.use(errors());
 
 app.use('*', errNotFound);
