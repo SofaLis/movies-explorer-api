@@ -10,7 +10,6 @@ const { errors } = require('celebrate');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { errServer } = require('./middlewares/errServer');
-const { errNotFound } = require('./middlewares/errNotFound');
 const { limiter } = require('./middlewares/limiter');
 const { mongoURL, mongoSetting } = require('./utils/config');
 const routes = require('./routes/index');
@@ -34,8 +33,6 @@ app.use(routes);
 app.use(errorLogger);
 
 app.use(errors());
-
-app.use('*', errNotFound);
 
 app.use(errServer);
 

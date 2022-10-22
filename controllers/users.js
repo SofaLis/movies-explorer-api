@@ -4,14 +4,11 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const BadRequest = require('../utils/err/BadRequest');
-const Unauthorized = require('../utils/err/Unauthorized');
 const NotFound = require('../utils/err/NotFound');
 const Conflict = require('../utils/err/Conflict');
 
 const { secretKey } = require('../utils/config');
-const {
-  NFUser, BR, Conf, UnautEnter,
-} = require('../utils/constants');
+const { NFUser, BR, Conf } = require('../utils/constants');
 
 module.exports.getUsersMe = (req, res, next) => {
   User.findById(req.user._id)
@@ -30,17 +27,21 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
     .then((user) => {
       if (user) {
-        res.status(200).send({ data: user });
+        res.status(200).send(user);
       } else {
         throw new NotFound(NFUser);
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequest(BR));
-      } else {
-        next(err);
+        return;
       }
+      if (err.name === 'MongoServerError') {
+        next(new Conflict(Conf));
+        return;
+      }
+      next(err);
     });
 };
 
@@ -54,7 +55,10 @@ module.exports.createUser = (req, res, next) => {
         name, email, password: hash,
       },
     ))
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).send({
+      email: user.email,
+      name: user.name,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest(BR));
@@ -80,9 +84,7 @@ module.exports.login = (req, res, next) => {
       });
       res.send({ token });
     })
-    .catch(() => {
-      next(new Unauthorized(UnautEnter));
-    });
+    .catch(next);
 };
 
 module.exports.logoff = (req, res) => {

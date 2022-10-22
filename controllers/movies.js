@@ -7,11 +7,11 @@ const Forbidden = require('../utils/err/Forbidden');
 const { NFCard, BR, Forb } = require('../utils/constants');
 
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({})
+  const owner = req.user._id;
+
+  Movie.find({ owner })
     .then((movies) => res.send(movies))
-    .catch((err) => {
-      next(err);
-    });
+    .catch((err) => next(err));
 };
 
 module.exports.createMovie = (req, res, next) => {
