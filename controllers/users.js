@@ -8,7 +8,9 @@ const NotFound = require('../utils/err/NotFound');
 const Conflict = require('../utils/err/Conflict');
 
 const { secretKey } = require('../utils/config');
-const { NFUser, BR, Conf } = require('../utils/constants');
+const {
+  NFUser, BR, Conf, LoginTrue, LoginFalse,
+} = require('../utils/constants');
 
 module.exports.getUsersMe = (req, res, next) => {
   User.findById(req.user._id)
@@ -82,18 +84,13 @@ module.exports.login = (req, res, next) => {
         httpOnly: true,
         sameSite: 'none',
       });
-      res.send({ token });
+      res.send(LoginTrue);
     })
     .catch(next);
 };
 
 module.exports.logoff = (req, res) => {
-  res.cookie('jwt', 'token', {
-    maxAge: 0,
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-  });
+  res.clearCookie('jwt');
   res.status(200)
-    .send({ message: 'вы покинули аккаунт' });
+    .send(LoginFalse);
 };

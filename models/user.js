@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 const isEmail = require('validator/lib/isEmail');
 const bcrypt = require('bcryptjs');
 
-const { UnautEnter } = require('../utils/constants');
+const { BR } = require('../utils/constants');
+const BadRequest = require('../utils/err/BadRequest');
 
 const userSchema = new Schema({
   name: {
@@ -30,18 +31,16 @@ const userSchema = new Schema({
   },
 });
 
-// eslint-disable-next-line func-names
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error(UnautEnter));
+        return Promise.reject(new BadRequest(BR));
       }
-
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error(UnautEnter));
+            return Promise.reject(new BadRequest(BR));
           }
           return user;
         });

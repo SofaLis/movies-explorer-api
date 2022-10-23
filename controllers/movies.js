@@ -4,7 +4,9 @@ const BadRequest = require('../utils/err/BadRequest');
 const NotFound = require('../utils/err/NotFound');
 const Forbidden = require('../utils/err/Forbidden');
 
-const { NFCard, BR, Forb } = require('../utils/constants');
+const {
+  NFCard, BR, Forb, FilmDelete,
+} = require('../utils/constants');
 
 module.exports.getMovies = (req, res, next) => {
   const owner = req.user._id;
@@ -19,7 +21,6 @@ module.exports.createMovie = (req, res, next) => {
     country, director, duration, year, description, image,
     trailerLink, thumbnail, movieId, nameRU, nameEN,
   } = req.body;
-  const ownerId = req.user._id;
   Movie.create({
     country,
     director,
@@ -32,7 +33,7 @@ module.exports.createMovie = (req, res, next) => {
     movieId,
     nameRU,
     nameEN,
-    owner: ownerId,
+    owner: req.user._id,
   })
     .then((movie) => res.status(201).send(movie))
     .catch((err) => {
@@ -54,7 +55,7 @@ module.exports.deleteMovie = (req, res, next) => {
         throw new Forbidden(Forb);
       }
       Movie.findByIdAndRemove(req.params.movieId)
-        .then(() => res.status(200).send({ message: 'Карточка удалена' }))
+        .then(() => res.status(200).send(FilmDelete))
         .catch((err) => next(err));
     })
     .catch((err) => {

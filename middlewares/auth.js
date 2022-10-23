@@ -4,8 +4,7 @@ const Unauthorized = require('../utils/err/Unauthorized');
 const { secretKey } = require('../utils/config');
 const { UnautAuth } = require('../utils/constants');
 
-// eslint-disable-next-line consistent-return
-module.exports = (req, res, next) => {
+module.exports.auth = (req, res, next) => {
   const token = req.cookies.jwt;
   if (!token) {
     next(new Unauthorized(UnautAuth));
@@ -17,6 +16,7 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, secretKey);
   } catch (err) {
     next(new Unauthorized(UnautAuth));
+    return;
   }
   req.user = payload;
   next();

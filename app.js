@@ -12,7 +12,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { errServer } = require('./middlewares/errServer');
 const { limiter } = require('./middlewares/limiter');
 const { mongoURL, mongoSetting } = require('./utils/config');
-const routes = require('./routes/index');
+const routes = require('./routes');
 
 const { PORT = 3000 } = process.env;
 
@@ -22,11 +22,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
-app.use(limiter);
 
 mongoose.connect(mongoURL, mongoSetting);
 
 app.use(requestLogger);
+
+app.use(limiter);
 
 app.use(routes);
 
@@ -36,12 +37,4 @@ app.use(errors());
 
 app.use(errServer);
 
-// eslint-disable-next-line no-console
-console.log(process.env.JWT_SECRET);
-// eslint-disable-next-line no-console
-console.log(process.env.NODE_ENV);
-
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listening on port ${PORT}`);
-});
+app.listen(PORT);

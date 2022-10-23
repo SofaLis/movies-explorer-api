@@ -1,6 +1,8 @@
+const { SerserErr } = require('../utils/constants');
+
 const errServer = (err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка сервера' : message });
+  res.status(statusCode).send(statusCode === 500 ? SerserErr : message);
   next();
 };
 
