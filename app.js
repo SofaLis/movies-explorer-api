@@ -37,4 +37,9 @@ app.use(errors());
 
 app.use(errServer);
 
+// eslint-disable-next-line no-console
+console.log(process.env.JWT_SECRET);
+// eslint-disable-next-line no-console
+console.log(process.env.NODE_ENV);
+
 app.listen(PORT);
