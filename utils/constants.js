@@ -22,6 +22,11 @@ module.exports.UnautAuth = 'Вы не авторизированны';
 // 500
 module.exports.SerserErr = 'Ошибка сервера';
 
+// valid
+
+module.exports.ValidURL = 'Неккотектная ссылка';
+module.exports.ValidEmail = 'Неправильный формат почты';
+
 // успешно
 module.exports.LoginTrue = 'Вы зарагестированны';
 module.exports.LoginFalse = 'Вы покинули аккаунт';
