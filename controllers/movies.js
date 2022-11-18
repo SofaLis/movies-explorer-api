@@ -5,7 +5,7 @@ const NotFound = require('../utils/err/NotFound');
 const Forbidden = require('../utils/err/Forbidden');
 
 const {
-  NFCard, BR, Forb, FilmDelete,
+  NFCard, BR, Forb,
 } = require('../utils/constants');
 
 module.exports.getMovies = (req, res, next) => {
@@ -55,7 +55,7 @@ module.exports.deleteMovie = (req, res, next) => {
         throw new Forbidden(Forb);
       }
       Movie.findByIdAndRemove(req.params.movieId)
-        .then(() => res.status(200).send(FilmDelete))
+        .then((movieDelte) => res.status(200).send(movieDelte))
         .catch((err) => next(err));
     })
     .catch((err) => {
