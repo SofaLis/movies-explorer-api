@@ -28,6 +28,6 @@ module.exports.ValidURL = 'Неккотектная ссылка';
 module.exports.ValidEmail = 'Неправильный формат почты';
 
 // успешно
-module.exports.LoginTrue = 'Вы зарагестированны';
-module.exports.LoginFalse = 'Вы покинули аккаунт';
-module.exports.FilmDelete = 'Фильм удален';
+module.exports.LoginTrue = { messege: 'Вы зарагестированны' };
+module.exports.LoginFalse = { messege: 'Вы покинули аккаунт' };
+module.exports.FilmDelete = { messege: 'Фильм удален' };
