@@ -28,11 +28,10 @@ module.exports.updateUser = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
     .then((user) => {
-      if (user) {
-        res.status(200).send(user);
-      } else {
+      if (!user) {
         throw new NotFound(NFUser);
       }
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -85,7 +84,10 @@ module.exports.login = (req, res, next) => {
         sameSite: 'none',
         secure: true,
       });
-      res.send(LoginTrue);
+      res.send({
+        email: user.email,
+        name: user.name,
+      });
     })
     .catch(next);
 };
