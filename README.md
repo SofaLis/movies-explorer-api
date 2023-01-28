@@ -30,7 +30,7 @@ ___
 
 ___
 
-### :computer: [Ссылка на репозиторийfrontend части](https://github.com/SofaLis/movies-explorer-frontend)
+### :computer: [Ссылка на репозиторий frontend части](https://github.com/SofaLis/movies-explorer-frontend)
 ___
 
 Этот сайт настроен на то, что его будут открывать на собственном домене.
